@@ -5,5 +5,5 @@ models/
 *.env
 __pycache__/
 *.pyc
-data/*.csv
+# data/*.csv
 data/*.pdf
