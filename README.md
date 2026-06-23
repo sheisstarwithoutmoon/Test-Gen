@@ -2,7 +2,7 @@
 
 AI-Teacher is an agentic, end-to-end educational pipeline that automates the cycle of curriculum definition, custom test generation, and strict assessment. 
 
-Instead of relying on generic prompt engineering, AI-Teacher integrates **CrewAI multi-agent orchestration** to gather context, a **custom-trained PEFT (LoRA) Gemma model** to generate context-specific exam questions, and **Gemini-1.5-Pro** to act as a strict professor evaluating student submissions with detailed feedback.
+Instead of relying on generic prompt engineering, AI-Teacher integrates **CrewAI multi-agent orchestration** to gather context, a **custom-trained PEFT (LoRA) Gemma model** to generate context-specific exam questions, and evaluator to act as a strict professor evaluating student submissions with detailed feedback.
 
 ---
 
