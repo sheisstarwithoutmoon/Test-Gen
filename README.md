@@ -11,7 +11,7 @@ Instead of relying on generic prompt engineering, AI-Teacher integrates **CrewAI
 Here is how the information flows through the system, from the initial topic down to the evaluated report card:
 
 ```mermaid
-graph LR
+flowchart TB
     %% Styling
     classDef default fill:#fafafa,stroke:#555,stroke-width:1px,font-family:sans-serif;
     classDef agent fill:#eef3fd,stroke:#1a73e8,stroke-width:2px,color:#1a73e8,font-weight:bold;
@@ -19,29 +19,31 @@ graph LR
     classDef user fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px,color:#1b5e20,font-weight:bold;
     classDef doc fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px,color:#4a148c,font-weight:bold;
     
-    subgraph CREW_AI ["CrewAI Orchestration (Knowledge Synthesis)"]
-        TopicGen["Topic Generator Agent<br/>(Instructor)"]:::agent
-        PdfSearch["PDF Content Extractor<br/>(RAG Tool)"]:::agent
-        WebSearch["Web Content Extractor<br/>(Wikipedia Tool)"]:::agent
-        InfoCombiner["Information Combiner"]:::agent
+    subgraph GenStage ["1. Synthesis & Generation Stage (Left-to-Right)"]
+        direction LR
+        UserTopic((User Gives Topic)):::user --> TopicGen["Topic Generator Agent<br/>(Instructor)"]:::agent
+        TopicGen --> PdfSearch["PDF Content Extractor<br/>(RAG Tool)"]:::agent
+        TopicGen --> WebSearch["Web Content Extractor<br/>(Wikipedia Tool)"]:::agent
+        TopicGen --> InfoCombiner["Information Combiner"]:::agent
+        PdfSearch --> InfoCombiner
+        WebSearch --> InfoCombiner
+        InfoCombiner --> Contexts["Contexts About Topic<br/>(10 Structured Points)"]:::doc
+        Contexts --> PEFTModel["PEFT Fine-Tuned Model<br/>(Gemma-2-2B-IT + LoRA)"]:::model
+        PEFTModel --> TestGen["Test Generation<br/>(10 Questions / 100 Marks)"]:::doc
     end
 
-    UserTopic((User Gives<br/>Topic)):::user --> TopicGen
-    TopicGen --> PdfSearch
-    TopicGen --> WebSearch
-    TopicGen --> InfoCombiner
-    PdfSearch --> InfoCombiner
-    WebSearch --> InfoCombiner
-    
-    InfoCombiner --> Contexts["Contexts About Topic<br/>(10 Structured Points)"]:::doc
-    Contexts --> PEFTModel["PEFT Fine-Tuned Model<br/>(Gemma-2-2B-IT + LoRA)"]:::model
-    PEFTModel --> TestGen["Test Generation<br/>(10 Questions / 100 Marks)"]:::doc
-    TestGen --> UserAttempt((User Attempts<br/>Test)):::user
-    UserAttempt --> Evaluator["Evaluator LLM<br/>(Gemini-1.5-Pro)"]:::model
-    Evaluator --> Report["Evaluated Report<br/>(Score & Feedback)"]:::doc
+    subgraph EvalStage ["2. Attempt & Evaluation Stage (Right-to-Left)"]
+        direction RL
+        UserAttempt((User Attempts Test)):::user --> Evaluator["Evaluator LLM<br/>(Gemini-1.5-Pro)"]:::model --> Report["Evaluated Report<br/>(Score & Feedback)"]:::doc
+    end
 
-    style CREW_AI fill:#f5f5f7,stroke:#dadce0,stroke-width:2px;
+    TestGen --> UserAttempt
+    
+    style GenStage fill:#f5f5f7,stroke:#dadce0,stroke-width:1.5px;
+    style EvalStage fill:#f5f5f7,stroke:#dadce0,stroke-width:1.5px;
 ```
+
+
 
 ---
 
