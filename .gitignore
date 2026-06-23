@@ -1,0 +1,9 @@
+.venv/
+models/
+*.safetensors
+*.bin
+*.env
+__pycache__/
+*.pyc
+data/*.csv
+data/*.pdf
