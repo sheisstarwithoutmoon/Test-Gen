@@ -9,37 +9,7 @@ Instead of relying on generic prompt engineering, AI-Teacher integrates **CrewAI
 ## System Flowchart
 
 Here is how the information flows through the system, from the initial topic down to the evaluated report card:
-
-```mermaid
-graph LR
-    %% Styling
-    classDef default fill:#fafafa,stroke:#555,stroke-width:1px,font-family:sans-serif;
-    classDef agent fill:#eef3fd,stroke:#1a73e8,stroke-width:2px,color:#1a73e8,font-weight:bold;
-    classDef model fill:#fff8e1,stroke:#f57c00,stroke-width:2px,color:#e65100,font-weight:bold;
-    classDef user fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px,color:#1b5e20,font-weight:bold;
-    classDef doc fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px,color:#4a148c,font-weight:bold;
-
-    UserTopic((User Gives Topic)):::user --> TopicGen["Topic Generator Agent<br/>(Instructor)"]:::agent
-    
-    subgraph CREW_AI ["CrewAI Orchestration (Knowledge Synthesis)"]
-        TopicGen --> PdfSearch["PDF Content Extractor<br/>(RAG Tool)"]:::agent
-        TopicGen --> WebSearch["Web Content Extractor<br/>(Wikipedia Tool)"]:::agent
-        TopicGen --> InfoCombiner["Information Combiner"]:::agent
-        PdfSearch --> InfoCombiner
-        WebSearch --> InfoCombiner
-    end
-
-    InfoCombiner --> Contexts["Contexts About Topic<br/>(10 Structured Points)"]:::doc
-    Contexts --> PEFTModel["PEFT Fine-Tuned Model<br/>(Gemma-2-2B-IT + LoRA)"]:::model
-    PEFTModel --> TestGen["Test Generation<br/>(10 Questions / 100 Marks)"]:::doc
-    TestGen --> UserAttempt((User Attempts Test)):::user
-    UserAttempt --> Evaluator["Evaluator LLM<br/>(Gemini-1.5-Pro)"]:::model
-    Evaluator --> Report["Evaluated Report<br/>(Score & Feedback)"]:::doc
-
-    style CREW_AI fill:#f5f5f7,stroke:#dadce0,stroke-width:1.5px;
-```
-
-
+<img width="1222" height="642" alt="image" src="https://github.com/user-attachments/assets/c161a7ec-5af4-4521-8ce8-fe9a06666fde" />
 
 ---
 
